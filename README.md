@@ -1,7 +1,8 @@
 # Docker resolver - Docker DNS resolver
 
-A simple DNS server + `/etc/hosts` file updater used to resolve names of local Docker containers.
+[![GoDoc](https://godoc.org/github.com/asjustas/docker-resolver?status.png)](https://godoc.org/github.com/asjustas/docker-resolver)
 
+A simple DNS server + `/etc/hosts` file updater used to resolve names of local Docker containers.
 ## Installation
 
 ```sh
