@@ -8,18 +8,18 @@ import (
 )
 
 func (app *App) startHostsWriter() {
-	fmt.Println("Starting /etc/hosts writer")
+	fmt.Println("Starting hosts file writer")
 
 	app.emitter.On("domains-updated", app.updateHostsFile)
 }
 
 func (app *App) updateHostsFile() {
-	cleanOldRecords()
+	cleanOldRecords(app)
 	writeNewRecords(app)
 }
 
-func cleanOldRecords() {
-	hosts, err := ioutil.ReadFile(HOSTS_FILE)
+func cleanOldRecords(app *App) {
+	hosts, err := ioutil.ReadFile(*app.hostsFile)
 
 	if err != nil {
 		panic(err)
@@ -28,7 +28,7 @@ func cleanOldRecords() {
 	re := regexp.MustCompile("(?m)^.*" + "docker-resolver" + ".*$[\n]+")
 	text := re.ReplaceAllString(string(hosts), "")
 
-	f, err := os.OpenFile(HOSTS_FILE, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0600)
+	f, err := os.OpenFile(*app.hostsFile, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0600)
 	if err != nil {
 		panic(err)
 	}
@@ -41,7 +41,7 @@ func cleanOldRecords() {
 }
 
 func writeNewRecords(app *App) {
-	f, err := os.OpenFile(HOSTS_FILE, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	f, err := os.OpenFile(*app.hostsFile, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
 		panic(err)
 	}
