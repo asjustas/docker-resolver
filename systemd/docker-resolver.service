@@ -1,0 +1,10 @@
+[Unit]
+Description=Docker resolver
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/docker-resolver
+Restart=always
+
+[Install]
+WantedBy=default.target
