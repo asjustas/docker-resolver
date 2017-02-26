@@ -1,28 +1,29 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"os"
 	"runtime"
 
 	"github.com/chuckpreslar/emission"
 )
 
-const (
-	HOSTS_FILE = "/tmp/hosts"
-)
-
 type App struct {
-	emitter *emission.Emitter
-	records map[string]string
+	emitter   *emission.Emitter
+	records   map[string]string
+	hostsFile *string
+	dnsBind   *string
 }
 
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU() * 4)
-	fmt.Println("Starting app")
 
 	app := new(App)
 	app.emitter = emission.NewEmitter()
 	app.records = make(map[string]string)
+
+	parseFlags(app)
 
 	containerStart := func(domains []string, ip string) {
 		fmt.Printf("ContainerStart %s\n%s\n\n", domains, ip)
@@ -38,6 +39,19 @@ func main() {
 	go app.startDockerListener()
 	app.startHostsWriter()
 	app.startDNSServer()
+}
+
+func parseFlags(app *App) {
+	app.dnsBind = flag.String("dns-bind", ":53", "Dns server bind address")
+	app.hostsFile = flag.String("hosts-file", "/etc/hosts", "Host file location")
+	help := flag.Bool("help", false, "Show usage")
+
+	flag.Parse()
+
+	if *help {
+		flag.Usage()
+		os.Exit(1)
+	}
 }
 
 func (app *App) registerDomains(domains []string, ip string) {

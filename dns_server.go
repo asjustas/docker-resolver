@@ -13,14 +13,14 @@ import (
 func (app *App) startDNSServer() {
 	fmt.Println("Starting dns server")
 
-	dns.HandleFunc(".", app.serveDns)
+	dns.HandleFunc(".", app.serveDNS)
 
-	go serve("tcp")
-	serve("udp")
+	go serve("tcp", *app.dnsBind)
+	serve("udp", *app.dnsBind)
 }
 
-func serve(net string) {
-	err := dns.ListenAndServe(":9999", net, nil)
+func serve(net string, bindAddr string) {
+	err := dns.ListenAndServe(bindAddr, net, nil)
 
 	if err != nil {
 		panic(fmt.Sprintf("Failed to set "+net+" listener %s\n", err.Error()))
@@ -28,7 +28,7 @@ func serve(net string) {
 	}
 }
 
-func (app *App) serveDns(w dns.ResponseWriter, r *dns.Msg) {
+func (app *App) serveDNS(w dns.ResponseWriter, r *dns.Msg) {
 	var answer []dns.RR
 
 	if dns.TypeA != r.Question[0].Qtype {

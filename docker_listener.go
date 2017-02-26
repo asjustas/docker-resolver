@@ -88,7 +88,7 @@ func getDomainsFromEnv(args []string) []string {
 	for _, arg := range args {
 		env := strings.Split(arg, "=")
 
-		if "NSQ" == env[0] || "DOMAIN_NAME" == env[0] || "DNSDOCK_NAME" == env[0] {
+		if "DOMAIN_NAME" == env[0] || "DNSDOCK_NAME" == env[0] {
 			if strings.Contains(env[1], ",") {
 				splited := strings.Split(env[1], ",")
 
