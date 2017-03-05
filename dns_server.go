@@ -45,6 +45,8 @@ func (app *App) serveDNS(w dns.ResponseWriter, r *dns.Msg) {
 		m.Authoritative = false
 		m.SetRcode(r, dns.RcodeNotImplemented)
 		w.WriteMsg(m)
+
+		return
 	}
 
 	record := new(dns.A)
