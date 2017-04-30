@@ -9,11 +9,23 @@ import (
 	"github.com/chuckpreslar/emission"
 )
 
+type BindFlags []string
+
 type App struct {
 	emitter   *emission.Emitter
 	records   map[string]string
 	hostsFile *string
-	dnsBind   *string
+	dnsBinds  BindFlags
+}
+
+func (i *BindFlags) String() string {
+	return "my string representation"
+}
+
+func (i *BindFlags) Set(value string) error {
+	*i = append(*i, value)
+
+	return nil
 }
 
 func main() {
@@ -42,8 +54,8 @@ func main() {
 }
 
 func parseFlags(app *App) {
-	app.dnsBind = flag.String("dns-bind", ":53", "Dns server bind address")
 	app.hostsFile = flag.String("hosts-file", "/etc/hosts", "Host file location")
+	flag.Var(&app.dnsBinds, "dns-bind", "Dns server bind address")
 	help := flag.Bool("help", false, "Show usage")
 
 	flag.Parse()

@@ -15,8 +15,24 @@ func (app *App) startDNSServer() {
 
 	dns.HandleFunc(".", app.serveDNS)
 
-	go serve("tcp", *app.dnsBind)
-	serve("udp", *app.dnsBind)
+	if 0 == len(app.dnsBinds) {
+		go serve("tcp", ":53")
+		serve("udp", ":53")
+
+		return
+	}
+
+	lastBind := app.dnsBinds[len(app.dnsBinds)-1]
+
+	for _, bind := range app.dnsBinds {
+		go serve("tcp", bind)
+
+		if lastBind != bind {
+			go serve("udp", bind)
+		} else {
+			serve("udp", bind)
+		}
+	}
 }
 
 func serve(net string, bindAddr string) {
